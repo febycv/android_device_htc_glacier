@@ -1,0 +1,99 @@
+#
+# system.prop for glacier
+# Common display settings
+ro.sf.lcd_density=240
+debug.fb.rgb565=0
+debug.sf.hw=1
+#debug.composition.type = gpu
+
+# Qualcomm display settings
+debug.qctwa.statusbar = 1
+debug.qctwa.preservebuf = 1
+debug.enabletr=false
+com.qc.hardware=true
+
+# Modify MMS APN retry timer from 5s to 2s.
+ro.gsm.2nd_data_retry_config=max_retries=3, 2000, 2000, 2000
+
+rild.libpath=/system/lib/libhtc_ril.so
+
+ro.ril.ecc.HTC-GCC=999,112,997
+ro.ril.ecc.HTC-WWE=999
+ro.ril.ecc.HTC-ELL=92,93,94
+ro.ril.enable.a52.HTC-ITA=1
+ro.ril.enable.a53.HTC-ITA=1
+ro.ril.enable.a52=0
+ro.ril.enable.a53=1
+ro.ril.disable.fd.plmn.prefix=23402,23410,23411
+ro.ril.enable.sdr=1
+ro.ril.enable.amr.wideband=0
+
+ro.ril.enable.dtm=0
+ro.ril.gprsclass=12
+ro.ril.hsdpa.category=10
+ro.ril.hsupa.category=6
+ro.ril.hsxpa=2
+
+# Default network type.
+# 0 => WCDMA preferred.
+ro.telephony.default_network=0
+
+wifi.interface=eth0
+wifi.supplicant_scan_interval=100
+
+mobiledata.interfaces=gannet0,rmnet0,rmnet1,rmnet2
+
+# The OpenGL ES API level that is natively supported by this device.
+# This is a 16.16 fixed point number
+ro.opengles.version=131072
+
+# This is a high density device with more memory, so larger vm heaps for it.
+dalvik.vm.heapsize=64m
+
+# For the default value of agps
+ro.ril.def.agps.mode=2
+
+# For HSDPA low throughput
+ro.ril.disable.power.collapse=1
+
+ro.ril.update.org.acoustic=1
+
+# Define TCP buffer sizes
+net.tcp.buffersize.hsdpa=4094,87380,393216,4096,16384,110208
+
+#For USB mount
+persist.sys.usb.config=mass_storage,adb
+
+#For WiFi Calling
+ro.ril.enable.ganlite=1
+rild.libpath.ganlite=/system/lib/librilswitch.so
+rilswitch.vendorlibpath=/system/lib/libhtc_ril.so
+rilswitch.ganlibpath=/system/lib/libganril.so
+
+#HW accel
+debug.fb.rgb565=0
+debug.sf.hw=1
+debug.composition.type=dyn
+ro.sf.compbypass.enable=1
+debug.enabletr=false
+com.qc.hardware=true
+com.qc.hdmi_out=false
+ro.config.disable_hw_accel=false
+
+# For FOTA setting (disabled)
+ro.config.htc.nocheckin=1
+ro.config.nocheckin=1
+
+# Increase overall touch responsiveness
+windowsmgr.max_events_per_sec=150
+
+# For ext4 file system
+ro.ext4fs = 1
+
+# Disable debugging notify icon on statusbar
+persist.adb.notify=0
+
+# Improve overall media quality
+ro.media.enc.jpeg.quality=100
+ro.media.dec.jpeg.memcap=8000000
+ro.media.enc.hprof.vid.bps=8000000
