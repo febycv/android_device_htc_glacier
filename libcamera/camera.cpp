@@ -1,5 +1,7 @@
 /*
  * Copyright (C) 2012 The Android Open Source Project
+ * Copyright (C) 2012 Zhibin Wu, Twisted, Nico Kaiser
+ *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +30,7 @@
 #include <unistd.h>
 
 #include <cutils/log.h>
-#include <ui/Overlay.h>
+#include "overlay.h"
 #include <camera/CameraParameters.h>
 #include <hardware/camera.h>
 #include "CameraHardwareInterface.h"
@@ -66,8 +68,8 @@ camera_module_t HAL_MODULE_INFO_SYM = {
          version_major: 1,
          version_minor: 0,
          id: CAMERA_HARDWARE_MODULE_ID,
-         name: "Glacier CameraHal Module",
-         author: "febycv",
+         name: "msm7x30 CameraHal Module",
+         author: "Zhibin Wu",
          methods: &camera_module_methods,
          dso: NULL, /* remove compilation warnings */
          reserved: {0}, /* remove compilation warnings */
@@ -666,6 +668,20 @@ int camera_set_parameters(struct camera_device * device, const char *params)
 
     String8 params_str8(params);
     camParams.unflatten(params_str8);
+    
+    if (dev->cameraid == 1) {
+    
+#if defined(BOARD_USE_REVERSE_FFC)
+
+        /* Change default parameters for the front camera */
+        camParams.set("front-camera-mode", "reverse"); // default is "mirror"
+
+#endif
+
+        LOGD("Skipping setParameters for FFC");
+        return 0;
+    
+    }
 
     rv = gCameraHals[dev->cameraid]->setParameters(camParams);
 
@@ -689,12 +705,6 @@ char* camera_get_parameters(struct camera_device * device)
     dev = (priv_camera_device_t*) device;
 
     camParams = gCameraHals[dev->cameraid]->getParameters();
-
-    // filter picture size
-    camParams.set(CameraParameters::KEY_SUPPORTED_PICTURE_SIZES,
-                  "3264x2448,2592x1936,2048x1536,1280x960,640x480");
-    camParams.set(CameraParameters::KEY_SUPPORTED_PREVIEW_SIZES,
-                  "640x480");
 
     params_str8 = camParams.flatten();
     params = (char*) malloc(sizeof(char) * (params_str8.length()+1));
@@ -849,6 +859,21 @@ int camera_device_open(const hw_module_t* module, const char* name,
             rv = -ENOMEM;
             goto fail;
         }
+
+#ifdef BOARD_HAVE_HTC_FFC
+#define HTC_SWITCH_CAMERA_FILE_PATH "/sys/android_camera2/htcwc"
+
+        char htc_buffer[16];
+        int htc_fd;
+
+        if (access(HTC_SWITCH_CAMERA_FILE_PATH, W_OK) == 0) {
+            LOGI("Switching to HTC Camera: %d", cameraid);
+            snprintf(htc_buffer, sizeof(htc_buffer), "%d", cameraid);
+            htc_fd = open(HTC_SWITCH_CAMERA_FILE_PATH, O_WRONLY);
+            write(htc_fd, htc_buffer, strlen(htc_buffer));
+            close(htc_fd);
+        }
+#endif
 
         memset(priv_camera_device, 0, sizeof(*priv_camera_device));
         memset(camera_ops, 0, sizeof(*camera_ops));
